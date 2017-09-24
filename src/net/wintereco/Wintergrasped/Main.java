@@ -1,11 +1,16 @@
 package net.wintereco.Wintergrasped;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,6 +61,8 @@ public class Main extends JavaPlugin implements Listener {
 	public ArrayList<Player> Online = new ArrayList();
 	public ArrayList<String> inDebt = new ArrayList();
 	
+	public String curVersion = "1.12";
+	
 	public String TAG = ChatColor.GOLD+"["+ChatColor.BLUE+"WinterEco"+ChatColor.GOLD+"]";
 	public Economy econ;
 	
@@ -67,6 +74,7 @@ public class Main extends JavaPlugin implements Listener {
 		setupEconomy();
 		runDuty();
 		load();
+		VersionCheck();
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 	}
 	
@@ -762,6 +770,8 @@ public class Main extends JavaPlugin implements Listener {
 				if (debug) {
 				Bukkit.getLogger().info("RUN!");
 				}
+				
+				VersionCheck();
 			}
 			
 			},0, 1200);
@@ -895,6 +905,31 @@ public class Main extends JavaPlugin implements Listener {
 		savePlayerData(P);
 		Online.remove(P);
 		this.saveConfig();
+	}
+	
+	public void VersionCheck() {
+		
+		
+		 try {
+		        // Create a URL for the desired page
+		        URL url = new URL("https://raw.githubusercontent.com/Wintergrasped/WinterEco-Estates/master/version");       
+
+		        // Read all the text returned by the server
+		        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+		        String str;
+		        while ((str = in.readLine()) != null) {
+		            str = in.readLine().toString();
+		            if (!curVersion.equalsIgnoreCase(str)) {
+		            	Bukkit.getLogger().log(Level.WARNING, "WinterEco is out of date Currently Running V"+curVersion+" Latest version is V"+str);
+		            	Bukkit.getLogger().log(Level.WARNING, "It is strongly recomonded you update immediately.");
+		            }
+		            // str is one line of text; readLine() strips the newline character(s)
+		        }
+		        in.close();
+		    } catch (MalformedURLException e) {
+		    } catch (IOException e) {
+		    }
+		
 	}
 	
 	
