@@ -19,7 +19,8 @@ public class Banking {
 	
 	public Loan LN;
 	
-	public void AutoPay(Economy eco) {
+	
+	public void AutoPay(Main NM, Economy eco) {
 		
 		
 		
@@ -33,9 +34,15 @@ public class Banking {
 			long ServerTime = conf.getLong("ServerTime");
 			int Type = conf.getInt("LoanInfo."+LID+".Type");
 			
+			Loan LNM = new Loan(LID, Bukkit.getPlayer(UUID.fromString(Owner)), Ammount, PayAmmount, PayRemaining, Type, ServerTime, "");
+			
 			if (NextPay >= ServerTime) {
 				Player OWN = Bukkit.getPlayer(UUID.fromString(Owner));
+				
+				//Does player have enough for payment?
 				if (eco.has(OWN, PayAmmount)) {
+					
+					//Withdraw payment
 					eco.withdrawPlayer(OWN, PayAmmount);
 					PayRemaining--;
 					conf.set("LoanInfo."+LID+".PayRemaining", PayRemaining);
@@ -43,6 +50,34 @@ public class Banking {
 					NextPay = NextPay+720;
 					conf.set("LoanInfo."+LID+".NextPay", NextPay);
 					
+					//Add Payment to player credit history
+					int Payments = conf.getInt("PlayerData."+OWN.getUniqueId()+".Payments");
+					Payments++;
+					conf.set("PlayerData."+OWN.getUniqueId()+".Payments", Payments);
+					M.saveConfig();
+				}else {
+					
+					//Add Payment to player credit history
+					int LatePayments = conf.getInt("PlayerData."+OWN.getUniqueId()+".LatePayments");
+					LatePayments++;
+					conf.set("PlayerData."+OWN.getUniqueId()+".LatePayments", LatePayments);
+					M.saveConfig();
+					
+					//Calculate Ammount needed to pay off loan
+					int SELL = LNM.getPaymentAmount()*LNM.getPaymentsRemaining();
+					
+					
+					if (LNM.involvesPropety()) {
+					//Evict the playter
+					NM.evictPlayer(OWN, LNM.getProperty(), SELL);
+					
+					LNM.setPaymentsRemaining(0);
+					conf.set("LoanInfo."+LID+".PayRemaining", 0);
+					}else {
+						LatePayments = +conf.getInt("LoanInfo."+LID+".PayRemaining"); 
+						conf.set("PlayerData."+OWN.getUniqueId()+".LatePayments", LatePayments);
+						M.saveConfig();
+					}
 				}
 			}
 			

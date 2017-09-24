@@ -10,10 +10,10 @@ public class Loan {
 	public int pmtl;
 	public int t;
 	public String Prop;
-	public int I;
+	public String I;
 	
 	
-	public Loan(int ID, Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, long NextPayment, String property) {
+	public Loan(String ID, Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, long NextPayment, String property) {
 		
 		p = P;
 		amt= Ammount;
@@ -46,7 +46,11 @@ public class Loan {
 		return t;
 	}
 	
-	public int getID() {
+	public String getProperty() {
+		return Prop;
+	}
+	
+	public String getID() {
 		return I;
 	}
 	

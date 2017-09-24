@@ -41,6 +41,7 @@ public class Main extends JavaPlugin implements Listener {
 	public int goodcredit = 720;
 	public double Version = 1.2;
 	public long ServerTime = 0;
+	public String Evictor = "5d1ead21-099d-3a92-baac-2a53cab17220";
 	
 	public int FoundingCity = 4500000;
 	public int creditLock = 0;
@@ -135,6 +136,12 @@ public class Main extends JavaPlugin implements Listener {
     	if (this.getConfig().contains("ServerTime")) {
     	ServerTime = this.getConfig().getLong("ServerTime");
     	}
+    	
+    	if (this.getConfig().contains("ServerOwner.UUID")) {
+    		Evictor = "5d1ead21-099d-3a92-baac-2a53cab17220";
+    	}else {
+    	Evictor = this.getConfig().getString("ServerOwner.UUID");
+    	}
     }
 	
 	public void onDisable() {
@@ -143,6 +150,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getConfig().set("PropertyForRentSaves", PropertysForRent);
 		this.getConfig().set("InDebt", inDebt);
 		this.getConfig().set("ServerTime", ServerTime);
+		this.getConfig().set("ServerOwner.UUID", Evictor);
 		this.saveConfig();
 	}
 	
@@ -429,7 +437,7 @@ public class Main extends JavaPlugin implements Listener {
 					   conf.set("PlayerData."+P.getUniqueId()+".Payments", Payments);
 					   curLoan++;
 					   long NPM = ServerTime+720;
-					   Loan CL = new Loan(curLoan, P, Price, (Price/24), 24, 2, NPM, args[2]);
+					   Loan CL = new Loan(curLoan+"", P, Price, (Price/24), 24, 2, NPM, args[2]);
 					   Loans.add(CL);
 					   List<String> lids = new ArrayList();
 					   if (conf.contains("PlayerData."+P.getUniqueId().toString()+".loans")) {
@@ -604,6 +612,25 @@ public class Main extends JavaPlugin implements Listener {
 	 ****END****
 	 ***********/
 	
+	
+	public void evictPlayer(Player P, String Property, int Amount) {
+		
+		
+		//Remove Player from Property
+		DefaultDomain OWNS = new DefaultDomain();
+		OWNS.removeAll();
+		getWorldGuard().getRegionManager(P.getWorld()).getRegion(getRegionName(P)).setOwners(OWNS);	
+		
+		//Post Property For Sale
+		PropertysForSale.add(Property);
+		   this.getConfig().set("Propertys."+Property+".Seller", Evictor);
+		   this.getConfig().set("Propertys."+Property+".Price", Amount);
+		   this.saveConfig();
+		   
+		   P.sendMessage(TAG+ChatColor.RED+"You've Been Evicted");
+		   
+		
+	}
 	
 	
 	public void savePlayerData(Player P) {
