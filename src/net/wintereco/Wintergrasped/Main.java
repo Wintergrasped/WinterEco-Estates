@@ -966,6 +966,7 @@ public class Main extends JavaPlugin implements Listener {
         	Bukkit.getLogger().log(Level.WARNING, "*===========================================*");
         	Bukkit.getLogger().log(Level.WARNING, "*==WinterEco is out of date Please Update!==*");
         	Bukkit.getLogger().log(Level.WARNING, "*===========================================*");
+        	Bukkit.getLogger().log(Level.WARNING, "Curent Version: "+curVersion+" UpdatedVersion: "+UpdateVersion);
         }
     }
 		
