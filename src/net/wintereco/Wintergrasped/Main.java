@@ -38,13 +38,18 @@ import net.milkbowl.vault.economy.Economy;
 public class Main extends JavaPlugin implements Listener {
 
 	
+	
+	public String curVersion = "1.12";
+	public String UpdateVersion = "";
+	
+	
+	
+	
 	public boolean debug = true;
 	
 	public FileConfiguration conf = this.getConfig();
 	public int badcredit = 450;
 	public int okaycredit = 600;
-	public int goodcredit = 720;
-	public double Version = 1.2;
 	public long ServerTime = 0;
 	public String Evictor = "5d1ead21-099d-3a92-baac-2a53cab17220";
 	
@@ -60,8 +65,6 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public ArrayList<Player> Online = new ArrayList();
 	public ArrayList<String> inDebt = new ArrayList();
-	
-	public String curVersion = "1.12";
 	
 	public String TAG = ChatColor.GOLD+"["+ChatColor.BLUE+"WinterEco"+ChatColor.GOLD+"]";
 	public Economy econ;
@@ -193,7 +196,8 @@ public class Main extends JavaPlugin implements Listener {
 		if (cmd.getName().equalsIgnoreCase("wec")) {
 			if (args.length == 0) {
 				P.sendMessage(ChatColor.GREEN+" Made by Wintergrasped");
-				P.sendMessage(ChatColor.GREEN+" Version: "+ Version);
+				P.sendMessage(ChatColor.GREEN+" Version: "+ curVersion);
+				P.sendMessage(ChatColor.GREEN+" Latest Version: "+ UpdateVersion);
 				P.sendMessage(ChatColor.GREEN+" Server of Origin CrushCraft");
 				P.sendMessage(ChatColor.GREEN+" Initial relase 9/22/2017 by Wintergrasped on Spigotmc.org");
 				P.sendMessage(ChatColor.GREEN+" Source: https://github.com/Wintergrasped/WinterEco-Estates");
@@ -919,6 +923,7 @@ public class Main extends JavaPlugin implements Listener {
 		        String str;
 		        while ((str = in.readLine()) != null) {
 		            str = in.readLine().toString();
+		            UpdateVersion = str;
 		            if (!curVersion.equalsIgnoreCase(str)) {
 		            	Bukkit.getLogger().log(Level.WARNING, "WinterEco is out of date Currently Running V"+curVersion+" Latest version is V"+str);
 		            	Bukkit.getLogger().log(Level.WARNING, "It is strongly recomonded you update immediately.");
