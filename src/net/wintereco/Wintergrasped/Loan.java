@@ -12,9 +12,10 @@ public class Loan {
 	public long NP;
 	public String Prop;
 	public String I;
+	public int fgv;
 	
 	
-	public Loan(String ID, Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, long NextPayment, String property) {
+	public Loan(String ID, Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, long NextPayment, int forgivness, String property) {
 		
 		p = P;
 		amt= Ammount;
@@ -23,6 +24,7 @@ public class Loan {
 		t = type;
 		I = ID;
 		NP = NextPayment;
+		fgv = forgivness;
 		if (type == 2) {
 			Prop = Prop;
 		}
@@ -60,6 +62,10 @@ public class Loan {
 		return I;
 	}
 	
+	public int getForgivness() {
+		return fgv;
+	}
+	
 	public boolean involvesPropety() {
 		if (!(t==1)) {
 			return true;
@@ -77,6 +83,10 @@ public class Loan {
 	
 	public void setAmount(int i) {
 		amt = i;
+	}
+	
+	public void setForgivness(int i) {
+		fgv = i;
 	}
 	
 	public void setPaymentAmount(int i) {

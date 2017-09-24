@@ -34,7 +34,7 @@ public class Banking {
 			long ServerTime = conf.getLong("ServerTime");
 			int Type = conf.getInt("LoanInfo."+LID+".Type");
 			
-			Loan LNM = new Loan(LID, Bukkit.getPlayer(UUID.fromString(Owner)), Ammount, PayAmmount, PayRemaining, Type, ServerTime, "");
+			Loan LNM = new Loan(LID, Bukkit.getPlayer(UUID.fromString(Owner)), Ammount, PayAmmount, PayRemaining, Type, ServerTime, conf.getInt("ForgivnessPoints"), "");
 			
 			if (NextPay >= ServerTime) {
 				Player OWN = Bukkit.getPlayer(UUID.fromString(Owner));
@@ -47,7 +47,7 @@ public class Banking {
 					PayRemaining--;
 					conf.set("LoanInfo."+LID+".PayRemaining", PayRemaining);
 					OWN.sendMessage(ChatColor.GREEN+" Loan Payment of $"+PayAmmount+" deducted for loan ID: "+LID);
-					NextPay = NextPay+720;
+					NextPay = NextPay+conf.getInt("PaymentTerm");
 					conf.set("LoanInfo."+LID+".NextPay", NextPay);
 					
 					//Add Payment to player credit history
@@ -85,4 +85,60 @@ public class Banking {
 		
 	}
 	
+	public boolean payBill(Main NM, Economy eco, String LID) {
+		
+		String Owner = conf.getString("LoanInfo."+LID+".Owner");
+		int LoanAmmount = conf.getInt("LoanInfo."+LID+".Amount");
+		int PayAmmount = conf.getInt("LoanInfo."+LID+".PayAmount");
+		int Forgivness = conf.getInt("LoanInfo."+LID+".Forgivness");
+		int PayRemaining = conf.getInt("LoanInfo."+LID+".PayRemaining");
+		long NextPay = conf.getLong("LoanInfo."+LID+".NextPay");
+		long ServerTime = conf.getLong("ServerTime");
+		int Type = conf.getInt("LoanInfo."+LID+".Type");
+		Player p = Bukkit.getPlayer(UUID.fromString(Owner));
+		
+		
+		if (eco.has(Bukkit.getPlayer(UUID.fromString(Owner)), PayAmmount)) {
+			eco.withdrawPlayer(Bukkit.getPlayer(UUID.fromString(Owner)), PayAmmount);
+			p.sendMessage(conf.getString("Tag")+ChatColor.GREEN+" You made a payment of $"+PayAmmount+" towards loan ID: "+LID);
+			PayRemaining--;
+			NextPay = NextPay+conf.getInt("PaymentTerm");
+			Forgivness = Forgivness+conf.getInt("ForgivnessPoints");
+			conf.set("LoanInfo."+LID+".Forgivness", Forgivness);
+			conf.set("LoanInfo."+LID+".NextPay", NextPay);
+			conf.set("LoanInfo."+LID+".PayRemaining", PayRemaining);
+			addPayments(NM, eco, Owner, false, true);
+			return true;
+		}else {
+			p.sendMessage(conf.getString("Tag")+ChatColor.RED+" Insufficent funds.");
+			return false;
+		}
+		
+		
+		
+	}
+	
+	
+	public void addPayments(Main NM, Economy eco, String Player, boolean late, boolean early) {
+		
+		if (late) {
+			int LatePayments = conf.getInt("PlayerData."+Player+".LatePayments");
+			LatePayments++;
+			conf.set("PlayerData."+Player+".LatePayments", LatePayments);
+			M.saveConfig();
+		}else {
+			if (early) {
+				int Payments = conf.getInt("PlayerData."+Player+".Payments");
+				Payments = Payments+2;
+				conf.set("PlayerData."+Player+".Payments", Payments);
+				M.saveConfig();
+			}else {
+			int Payments = conf.getInt("PlayerData."+Player+".Payments");
+			Payments++;
+			conf.set("PlayerData."+Player+".Payments", Payments);
+			M.saveConfig();
+			}
+		}
+		
+	}
 }

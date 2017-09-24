@@ -137,7 +137,8 @@ public class Main extends JavaPlugin implements Listener {
     				conf.getInt("LoanData."+PRS+".PayAmount"), 
     				conf.getInt("LoanData."+PRS+".PayRemaining"), 
     				conf.getInt("LoanData."+PRS+".Type"), 
-    				conf.getLong("LoanData."+PRS+".NextPay"), 
+    				conf.getLong("LoanData."+PRS+".NextPay"),
+    				conf.getInt("LoanData."+PRS+".Forgivness"),
     				conf.getString("LoanData."+PRS+".Property")));
     	}
     	
@@ -450,7 +451,7 @@ public class Main extends JavaPlugin implements Listener {
 					   conf.set("PlayerData."+P.getUniqueId()+".Payments", Payments);
 					   curLoan++;
 					   long NPM = ServerTime+720;
-					   Loan CL = new Loan(curLoan+"", P, Price, (Price/24), 24, 2, NPM, args[2]);
+					   Loan CL = new Loan(curLoan+"", P, Price, (Price/24), 24, 2, NPM,conf.getInt("ForgivnessPoints"), args[2]);
 					   Loans.add(CL);
 					   List<String> lids = new ArrayList();
 					   if (conf.contains("PlayerData."+P.getUniqueId().toString()+".loans")) {
@@ -476,8 +477,9 @@ public class Main extends JavaPlugin implements Listener {
 					P.sendMessage(TAG+ChatColor.RED+" You need to specify a property ID");
 				}
 				
-			}else if (1==1) {
-				
+			}else if (args[1].equalsIgnoreCase("pay")) {
+				Banking  B = new Banking();
+				B.payBill(this, econ, args[2]);
 			}
 			
 			this.saveConfig();
@@ -779,6 +781,7 @@ public class Main extends JavaPlugin implements Listener {
     				conf.set("LoanData."+PRS+".PayRemaining", HG.getPaymentsRemaining()); 
     				conf.set("LoanData."+PRS+".Type", HG.getType());
     				conf.set("LoanData."+PRS+".NextPay", HG.getNextPay()); 
+    				conf.set("LoanData."+PRS+".Forgivness", HG.getForgivness());
     				if (HG.involvesPropety()) {
     					conf.set("LoanData."+PRS+".Property", HG.getProperty());
     				}else{
