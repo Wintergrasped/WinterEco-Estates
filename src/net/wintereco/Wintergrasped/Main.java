@@ -40,6 +40,7 @@ public class Main extends JavaPlugin implements Listener {
 	public int okaycredit = 600;
 	public int goodcredit = 720;
 	public double Version = 1.2;
+	public long ServerTime = 0;
 	
 	public int FoundingCity = 4500000;
 	public int creditLock = 0;
@@ -130,6 +131,10 @@ public class Main extends JavaPlugin implements Listener {
     	if (!this.getConfig().contains("curLoan")) {
     		this.getConfig().set("curLoan", curLoan);
     	}
+    	
+    	if (this.getConfig().contains("ServerTime")) {
+    	ServerTime = this.getConfig().getLong("ServerTime");
+    	}
     }
 	
 	public void onDisable() {
@@ -137,6 +142,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getConfig().set("PropertyForSaleSaves", PropertysForSale);
 		this.getConfig().set("PropertyForRentSaves", PropertysForRent);
 		this.getConfig().set("InDebt", inDebt);
+		this.getConfig().set("ServerTime", ServerTime);
 		this.saveConfig();
 	}
 	
@@ -422,7 +428,8 @@ public class Main extends JavaPlugin implements Listener {
 					   Payments++;
 					   conf.set("PlayerData."+P.getUniqueId()+".Payments", Payments);
 					   curLoan++;
-					   Loan CL = new Loan(curLoan, P, Price, (Price/24), 24, 2, args[2]);
+					   long NPM = ServerTime+720;
+					   Loan CL = new Loan(curLoan, P, Price, (Price/24), 24, 2, NPM, args[2]);
 					   Loans.add(CL);
 					   List<String> lids = new ArrayList();
 					   if (conf.contains("PlayerData."+P.getUniqueId().toString()+".loans")) {
@@ -430,14 +437,22 @@ public class Main extends JavaPlugin implements Listener {
 					   }
 					   lids.add(CL.getID()+"");
 					   conf.set("PlayerData."+P.getUniqueId().toString()+".loans", lids);
-					   
+					   P.sendMessage(TAG+ChatColor.GREEN+" Your loan ID is "+CL.getID()+" You will need this to make any extra payments. Your regular payments will automatically be deducted from your account. If you do not have the money in your account your property will be marked For Sale");
+					   List<String> LDS = new ArrayList();
+					   for (Loan LID : Loans) {
+						   
+						   String IDL = LID.getID()+"";
+						   LDS.add(IDL);
+						   conf.set("LoanList", LDS);
+						   
+					   }
 					   
 					
 					
 					
 					
 				}else {
-					//TODO Ask for property ID
+					P.sendMessage(TAG+ChatColor.RED+" You need to specify a property ID");
 				}
 				
 			}else if (1==1) {
@@ -709,6 +724,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public void saveAll() {
+		ServerTime++;
 		if (debug) {
 		Bukkit.getLogger().info("SavedAll");
 		}

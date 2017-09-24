@@ -13,7 +13,7 @@ public class Loan {
 	public int I;
 	
 	
-	public Loan(int ID, Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, String property) {
+	public Loan(int ID, Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, long NextPayment, String property) {
 		
 		p = P;
 		amt= Ammount;
