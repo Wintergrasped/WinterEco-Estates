@@ -55,6 +55,8 @@ public class Main extends JavaPlugin implements Listener {
 	public String TAG = ChatColor.GOLD+"["+ChatColor.BLUE+"WinterEco"+ChatColor.GOLD+"]";
 	public Economy econ;
 	
+	public int curLoan = 315;
+	
 	public void onEnable() {
 		this.saveDefaultConfig();
 		this.saveConfig();
@@ -122,6 +124,10 @@ public class Main extends JavaPlugin implements Listener {
     	
     	for (String PRS : this.getConfig().getStringList("InDebt")) {
     		inDebt.add(PRS);
+    	}
+    	
+    	if (!this.getConfig().contains("curLoan")) {
+    		this.getConfig().set("curLoan", curLoan);
     	}
     }
 	
@@ -407,7 +413,15 @@ public class Main extends JavaPlugin implements Listener {
 					   int Payments = conf.getInt("PlayerData."+P.getUniqueId()+".Payments");
 					   Payments++;
 					   conf.set("PlayerData."+P.getUniqueId()+".Payments", Payments);
-					   Loans.add(new Loan(P, Price, (Price/24), 24, 2, args[2]));
+					   curLoan++;
+					   Loan CL = new Loan(curLoan, P, Price, (Price/24), 24, 2, args[2]);
+					   Loans.add(CL);
+					   List<String> lids = new ArrayList();
+					   if (conf.contains("PlayerData."+P.getUniqueId().toString()+".loans")) {
+					   lids = conf.getStringList("PlayerData."+P.getUniqueId().toString()+".loans");
+					   }
+					   lids.add(CL.getID()+"");
+					   conf.set("PlayerData."+P.getUniqueId().toString()+".loans", lids);
 					   
 					   
 					

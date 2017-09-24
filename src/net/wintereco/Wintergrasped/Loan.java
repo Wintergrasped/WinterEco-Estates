@@ -10,15 +10,17 @@ public class Loan {
 	public int pmtl;
 	public int t;
 	public String Prop;
+	public int I;
 	
 	
-	public Loan(Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, String property) {
+	public Loan(int ID, Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, String property) {
 		
 		p = P;
 		amt= Ammount;
 		pamt = paymentAmmount;
 		pmtl = paymentsLeft;
 		t = type;
+		I = ID;
 		if (type == 2) {
 			Prop = Prop;
 		}
@@ -42,6 +44,10 @@ public class Loan {
 	
 	public int getType() {
 		return t;
+	}
+	
+	public int getID() {
+		return I;
 	}
 	
 	public boolean involvesPropety() {
