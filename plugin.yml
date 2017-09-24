@@ -1,0 +1,8 @@
+name: WinterEco
+main: net.wintereco.Wintergrasped.Main
+version: 1.00
+commands:
+   wec:
+      description: wec is used for controling WinterEco
+      permission: wintereco.use
+      permission-message: You don't have <permission>
