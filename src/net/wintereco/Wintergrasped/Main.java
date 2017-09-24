@@ -41,7 +41,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	
 	
-	public String curVersion = "1.12";
+	public String curVersion = "1.13";
 	public String UpdateVersion = "";
 	
 	
