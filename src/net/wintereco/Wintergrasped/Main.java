@@ -2,9 +2,11 @@ package net.wintereco.Wintergrasped;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -770,7 +772,6 @@ public class Main extends JavaPlugin implements Listener {
 			@Override
 			public void run() {
 				saveAll();
-				updateWG();
 				if (debug) {
 				Bukkit.getLogger().info("RUN!");
 				}
@@ -914,28 +915,60 @@ public class Main extends JavaPlugin implements Listener {
 	public void VersionCheck() {
 		
 		
-		 try {
-		        // Create a URL for the desired page
-		        URL url = new URL("https://raw.githubusercontent.com/Wintergrasped/WinterEco-Estates/master/version");       
+		URL url = null;
+		try {
+			url = new URL("https://raw.githubusercontent.com/Wintergrasped/WinterEco-Estates/master/version");
+		} catch (MalformedURLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
-		        // Read all the text returned by the server
-		        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-		        String str;
-		        while ((str = in.readLine()) != null) {
-		            str = in.readLine().toString();
-		            UpdateVersion = str;
-		            if (!curVersion.equalsIgnoreCase(str)) {
-		            	Bukkit.getLogger().log(Level.WARNING, "WinterEco is out of date Currently Running V"+curVersion+" Latest version is V"+str);
-		            	Bukkit.getLogger().log(Level.WARNING, "It is strongly recomonded you update immediately.");
-		            }
-		            // str is one line of text; readLine() strips the newline character(s)
-		        }
-		        in.close();
-		    } catch (MalformedURLException e) {
-		    } catch (IOException e) {
-		    }
+        // Get the input stream through URL Connection
+        URLConnection con = null;
+		try {
+			con = url.openConnection();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        InputStream is = null;
+		try {
+			is = con.getInputStream();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+        // Once you have the Input Stream, it's just plain old Java IO stuff.
+
+        // For this case, since you are interested in getting plain-text web page
+        // I'll use a reader and output the text content to System.out.
+
+        // For binary content, it's better to directly read the bytes from stream and write
+        // to the target file.
+
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        String line = null;
+
+        // read each line and write to System.out
+        try {
+			while ((line = br.readLine()) != null) {
+			    UpdateVersion = line;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        if (!curVersion.equalsIgnoreCase(UpdateVersion)) {
+        	Bukkit.getLogger().log(Level.WARNING, "*===========================================*");
+        	Bukkit.getLogger().log(Level.WARNING, "*==WinterEco is out of date Please Update!==*");
+        	Bukkit.getLogger().log(Level.WARNING, "*===========================================*");
+        }
+    }
 		
-	}
 	
 	
 	public void collectDebt() {
@@ -974,11 +1007,13 @@ public class Main extends JavaPlugin implements Listener {
 			
 			Player P = Bukkit.getPlayer(UUID.fromString(this.getConfig().getString("Propertys."+PR+".Owner")));
 			
+			
+			if (P.isOnline()) {
 			DefaultDomain OWNS = new DefaultDomain();
 			OWNS.removeAll();
 			OWNS.addPlayer(UUID.fromString(this.getConfig().getString("Propertys."+PR+".Owner")));
 			getWorldGuard().getRegionManager(P.getWorld()).getRegion(PR).setOwners(OWNS);
-			
+			}
 		}
 		
 	}
