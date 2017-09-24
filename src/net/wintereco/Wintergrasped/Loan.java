@@ -9,6 +9,7 @@ public class Loan {
 	public int pamt;
 	public int pmtl;
 	public int t;
+	public long NP;
 	public String Prop;
 	public String I;
 	
@@ -21,6 +22,7 @@ public class Loan {
 		pmtl = paymentsLeft;
 		t = type;
 		I = ID;
+		NP = NextPayment;
 		if (type == 2) {
 			Prop = Prop;
 		}
@@ -44,6 +46,10 @@ public class Loan {
 	
 	public int getType() {
 		return t;
+	}
+	
+	public long getNextPay() {
+		return NP;
 	}
 	
 	public String getProperty() {

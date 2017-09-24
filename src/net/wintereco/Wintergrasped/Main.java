@@ -46,6 +46,7 @@ public class Main extends JavaPlugin implements Listener {
 	public int FoundingCity = 4500000;
 	public int creditLock = 0;
 	public List<Loan> Loans = new ArrayList();
+	public List<String> LoansList = new ArrayList();
 	
 	public ArrayList<String> Propertys = new ArrayList();
 	public ArrayList<String> PropertysForSale = new ArrayList();
@@ -129,6 +130,17 @@ public class Main extends JavaPlugin implements Listener {
     		inDebt.add(PRS);
     	}
     	
+    	for (String PRS : this.getConfig().getStringList("LoanList")) {
+    		Loans.add(new Loan(PRS, 
+    				Bukkit.getPlayer(UUID.fromString(conf.getString("LoanData."+PRS+".Player"))), 
+    				conf.getInt("LoanData."+PRS+".Amount"), 
+    				conf.getInt("LoanData."+PRS+".PayAmount"), 
+    				conf.getInt("LoanData."+PRS+".PayRemaining"), 
+    				conf.getInt("LoanData."+PRS+".Type"), 
+    				conf.getLong("LoanData."+PRS+".NextPay"), 
+    				conf.getString("LoanData."+PRS+".Property")));
+    	}
+    	
     	if (!this.getConfig().contains("curLoan")) {
     		this.getConfig().set("curLoan", curLoan);
     	}
@@ -151,6 +163,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getConfig().set("InDebt", inDebt);
 		this.getConfig().set("ServerTime", ServerTime);
 		this.getConfig().set("ServerOwner.UUID", Evictor);
+		this.getConfig().set("LoanList", LoansList);
 		this.saveConfig();
 	}
 	
@@ -751,6 +764,24 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public void saveAll() {
+		
+		
+		for (Loan HG : Loans) {
+			LoansList.add(HG.getID());
+					String PRS = HG.getID(); 
+    				conf.set("LoanData."+PRS+".Player", HG.getOwner().getUniqueId().toString()); 
+    				conf.set("LoanData."+PRS+".Amount", HG.getAmount()); 
+    				conf.set("LoanData."+PRS+".PayAmount", HG.getPaymentAmount()); 
+    				conf.set("LoanData."+PRS+".PayRemaining", HG.getPaymentsRemaining()); 
+    				conf.set("LoanData."+PRS+".Type", HG.getType());
+    				conf.set("LoanData."+PRS+".NextPay", HG.getNextPay()); 
+    				if (HG.involvesPropety()) {
+    					conf.set("LoanData."+PRS+".Property", HG.getProperty());
+    				}else{
+    					conf.set("LoanData."+PRS+".Property", "");
+    				}
+		}
+		
 		ServerTime++;
 		if (debug) {
 		Bukkit.getLogger().info("SavedAll");

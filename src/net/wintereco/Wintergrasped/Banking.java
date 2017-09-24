@@ -68,7 +68,7 @@ public class Banking {
 					
 					
 					if (LNM.involvesPropety()) {
-					//Evict the playter
+					//Evict the player
 					NM.evictPlayer(OWN, LNM.getProperty(), SELL);
 					
 					LNM.setPaymentsRemaining(0);
