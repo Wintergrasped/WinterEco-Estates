@@ -479,6 +479,8 @@ public class Main extends JavaPlugin implements Listener {
 			}else if (1==1) {
 				
 			}
+			
+			this.saveConfig();
 		}
 		
 		/*
