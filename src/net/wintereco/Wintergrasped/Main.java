@@ -2,6 +2,7 @@ package net.wintereco.Wintergrasped;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,6 +42,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public int FoundingCity = 4500000;
 	public int creditLock = 0;
+	public List<Loan> Loans = new ArrayList();
 	
 	public ArrayList<String> Propertys = new ArrayList();
 	public ArrayList<String> PropertysForSale = new ArrayList();
@@ -343,130 +345,114 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
+		*TODO BEGINING OF CREDIT SYSTEM
+		*==========================================================*
+		*==========================================================*
+		*==========================================================*
+		*============BEGINING OF CREDIT SYSEM======================*
+		*==========================================================*
+		*==========================================================*
+		*==========================================================*
+		*/
+		
 		if (args[0].equalsIgnoreCase("credit")) {
-			Boolean locked = false;
-			if (args[1].equalsIgnoreCase("apply")) {
-				if (this.getConfig().contains("PlayerData."+P.getUniqueId().toString()+".CreditLock")) {
-					locked = this.getConfig().getBoolean("PlayerData."+P.getUniqueId().toString()+".CreditLock");
-				}
-				if (locked) {
-					
-				}else{
-					int crd = credit(P);
-					int LN = credit(P)*10;
-					double paym = 0;
-					
-					if (crd <= badcredit) {
-						LN = LN/2;
-						paym = (LN*0.8);
-					}else if (crd >= okaycredit && crd <= goodcredit) {
-						LN = LN * 5;
-						paym = (LN*0.25);
-					}else if(crd >= goodcredit) {
-						LN = LN * 100;
-						paym = (LN*0.08);
-					}
-					
-					if (isHighRisk(P)) {
-						LN = LN / 5;
-					}
-					
-					econ.depositPlayer(P.getName(), LN);
-					sender.sendMessage(TAG+ChatColor.GREEN+"Your credit application landed you $"+LN);
-					sender.sendMessage(TAG+ChatColor.GREEN+"Payment term, 12 payments of $"+paym);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".LoanAmmount", LN);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".PaymentAmmount", paym);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".NextPayment", paym);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".CreditLock", true);
-					inDebt.add(P.getUniqueId().toString());
-					this.saveConfig();
-					
-				}
-			
-			}
-			
-			if (args[1].equalsIgnoreCase("check")) {
-				if (this.getConfig().contains("PlayerData."+P.getUniqueId().toString()+".CreditLock")) {
-					locked = this.getConfig().getBoolean("PlayerData."+P.getUniqueId().toString()+".CreditLock");
-				}
-				if (locked) {
-					
-				}else{
-					int crds = credit(P);
-					int LNs = credit(P)*10;
-					double payms = 0;
-					
-					if (crds <= badcredit) {
-						LNs = LNs/2;
-						payms = (LNs*0.8);
-					}else if (crds >= okaycredit && crds <= goodcredit) {
-						LNs = LNs * 5;
-						payms = (LNs*0.25);
-					}else if(crds >= goodcredit) {
-						LNs = LNs * 100;
-						payms = (LNs*0.08);
-					}
-					
-					if (isHighRisk(P)) {
-						LNs = LNs / 5;
-					}
-					
-					
-					sender.sendMessage(TAG+ChatColor.GREEN+"Your credit application would land you $"+LNs);
-					sender.sendMessage(TAG+ChatColor.GREEN+"Payment term, 12 payments of $"+payms);
-					sender.sendMessage(TAG+ChatColor.GREEN+"do '/wec credit apply' to accept this offer");
-					
-					
-				}
-		}
-			
-			
 			if (args[1].equalsIgnoreCase("property")) {
 				
+				int creditscore = credit(P);
 				
-				if (this.getConfig().contains("PlayerData."+P.getUniqueId().toString()+".CreditLock") == false) {
-				
-				int crd = credit(P);
-				int LN = credit(P)*22;
-				double paym = 0;
-				
-				if (crd <= badcredit) {
-					LN = LN/2;
-					paym = (LN*0.2);
-				}else if (crd >= okaycredit && crd <= goodcredit) {
-					LN = LN * 5;
-					paym = (LN*0.10);
-				}else if(crd >= goodcredit) {
-					LN = LN * 100;
-					paym = (LN*0.03);
+				if (!args[2].isEmpty()) {
+					
+					int Price = this.getConfig().getInt("Propertys."+args[2]+".Price");
+					
+					   econ.depositPlayer(Bukkit.getPlayer(UUID.fromString(this.getConfig().getString("Propertys."+args[2]+".Owner"))), this.getConfig().getInt("Propertys."+args[1]+".Price"));
+					   this.getConfig().set("Propertys."+args[2]+".Owner", Bukkit.getPlayer(sender.getName()).getUniqueId().toString());
+					   this.getConfig().set("Propertys."+args[2]+".Loaned", Price);
+					   this.saveConfig();
+					   PropertysForSale.remove(args[1]);
+					   sender.sendMessage(TAG+ChatColor.GREEN+"You bought "+args[2]+" for "+this.getConfig().getInt("Propertys."+args[2]+".Price"));
+					   
+					   DefaultDomain OWNS = new DefaultDomain();
+						OWNS.removeAll();
+						OWNS.addPlayer(P.getUniqueId());
+						getWorldGuard().getRegionManager(P.getWorld()).getRegion(getRegionName(P)).setOwners(OWNS);
+						inDebt.add(P.getUniqueId().toString());
+						this.saveConfig();
+					   
+					   
+					   int Payments = conf.getInt("PlayerData."+P.getUniqueId()+".Payments");
+					   Payments++;
+					   conf.set("PlayerData."+P.getUniqueId()+".Payments", Payments);
+					   Loans.add(new Loan(P, Price, (Price/24), 24, 2, args[2]));
+					   
+					   
+					
+					
+					
+					
+				}else {
+					//TODO Ask for property ID
 				}
 				
-				if (isHighRisk(P)) {
-					LN = LN / 5;
-				}
+			}else if (1==1) {
 				
-				if (this.getConfig().getInt("Propertys."+args[2]+".Price") <= LN) {
-				   this.getConfig().set("Propertys."+args[2]+".Owner", Bukkit.getPlayer(sender.getName()).getUniqueId().toString());
-				   this.saveConfig();
-				   PropertysForSale.remove(args[2]);
-				   sender.sendMessage(TAG+ChatColor.GREEN+"You bought "+args[1]+" for "+this.getConfig().getInt("Propertys."+args[2]+".Price"));
-					sender.sendMessage(TAG+ChatColor.GREEN+"Payment term, 12 payments of $"+paym);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".LoanAmmount", LN);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".PaymentAmmount", paym);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".NextPayment", paym);
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".NextBill", getNextBillCycle(P));
-					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".CreditLock", true);
-					DefaultDomain OWNS = new DefaultDomain();
-					OWNS.removeAll();
-					OWNS.addPlayer(P.getUniqueId());
-					getWorldGuard().getRegionManager(P.getWorld()).getRegion(getRegionName(P)).setOwners(OWNS);
-					inDebt.add(P.getUniqueId().toString());
-					this.saveConfig();
-				}
-				
-			}
 			}
 		}
+		
+		/*
+		*TODO END OF CREDIT SYSTEM
+		*==========================================================*
+		*==========================================================*
+		*==========================================================*
+		*============END OF CREDIT SYSEM===========================*
+		*==========================================================*
+		*==========================================================*
+		*==========================================================*
+		*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 			
 			if (args[0].equalsIgnoreCase("rent")) {
 				if (args[1].equalsIgnoreCase("add")) {

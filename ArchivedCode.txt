@@ -1,0 +1,123 @@
+if (args[0].equalsIgnoreCase("credit")) {
+			Boolean locked = false;
+			if (args[1].equalsIgnoreCase("apply")) {
+				if (this.getConfig().contains("PlayerData."+P.getUniqueId().toString()+".CreditLock")) {
+					locked = this.getConfig().getBoolean("PlayerData."+P.getUniqueId().toString()+".CreditLock");
+				}
+				if (locked) {
+					
+				}else{
+					int crd = credit(P);
+					int LN = credit(P)*10;
+					double paym = 0;
+					
+					if (crd <= badcredit) {
+						LN = LN/2;
+						paym = (LN*0.8);
+					}else if (crd >= okaycredit && crd <= goodcredit) {
+						LN = LN * 5;
+						paym = (LN*0.25);
+					}else if(crd >= goodcredit) {
+						paym = (LN*0.08);
+					}
+					
+					if (isHighRisk(P)) {
+						LN = LN / 5;
+					}
+					
+					econ.depositPlayer(P.getName(), LN);
+					sender.sendMessage(TAG+ChatColor.GREEN+"Your credit application landed you $"+LN);
+					sender.sendMessage(TAG+ChatColor.GREEN+"Payment term, 12 payments of $"+paym);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".LoanAmmount", LN);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".PaymentAmmount", paym);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".NextPayment", paym);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".CreditLock", true);
+					inDebt.add(P.getUniqueId().toString());
+					this.saveConfig();
+					
+				}
+			
+			}
+			
+			if (args[1].equalsIgnoreCase("check")) {
+				if (this.getConfig().contains("PlayerData."+P.getUniqueId().toString()+".CreditLock")) {
+					locked = this.getConfig().getBoolean("PlayerData."+P.getUniqueId().toString()+".CreditLock");
+				}
+				if (locked) {
+					
+				}else{
+					int crds = credit(P);
+					int LNs = credit(P)*10;
+					double payms = 0;
+					
+					if (crds <= badcredit) {
+						LNs = LNs/2;
+						payms = (LNs*0.8);
+					}else if (crds >= okaycredit && crds <= goodcredit) {
+						LNs = LNs * 5;
+						payms = (LNs*0.25);
+					}else if(crds >= goodcredit) {
+						LNs = LNs * 100;
+						payms = (LNs*0.08);
+					}
+					
+					if (isHighRisk(P)) {
+						LNs = LNs / 5;
+					}
+					
+					
+					sender.sendMessage(TAG+ChatColor.GREEN+"Your credit application would land you $"+LNs);
+					sender.sendMessage(TAG+ChatColor.GREEN+"Payment term, 12 payments of $"+payms);
+					sender.sendMessage(TAG+ChatColor.GREEN+"do '/wec credit apply' to accept this offer");
+					
+					
+				}
+		}
+			
+			
+			if (args[1].equalsIgnoreCase("property")) {
+				
+				
+				if (this.getConfig().contains("PlayerData."+P.getUniqueId().toString()+".CreditLock") == false) {
+				
+				int crd = credit(P);
+				int LN = credit(P)*22;
+				double paym = 0;
+				
+				if (crd <= badcredit) {
+					LN = LN/2;
+					paym = (LN*0.2);
+				}else if (crd >= okaycredit && crd <= goodcredit) {
+					LN = LN * 5;
+					paym = (LN*0.10);
+				}else if(crd >= goodcredit) {
+					LN = LN * 100;
+					paym = (LN*0.03);
+				}
+				
+				if (isHighRisk(P)) {
+					LN = LN / 5;
+				}
+				
+				if (this.getConfig().getInt("Propertys."+args[2]+".Price") <= LN) {
+				   this.getConfig().set("Propertys."+args[2]+".Owner", Bukkit.getPlayer(sender.getName()).getUniqueId().toString());
+				   this.saveConfig();
+				   PropertysForSale.remove(args[2]);
+				   sender.sendMessage(TAG+ChatColor.GREEN+"You bought "+args[1]+" for "+this.getConfig().getInt("Propertys."+args[2]+".Price"));
+					sender.sendMessage(TAG+ChatColor.GREEN+"Payment term, 12 payments of $"+paym);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".LoanAmmount", LN);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".PaymentAmmount", paym);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".NextPayment", paym);
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".NextBill", getNextBillCycle(P));
+					this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".CreditLock", true);
+					DefaultDomain OWNS = new DefaultDomain();
+					OWNS.removeAll();
+					OWNS.addPlayer(P.getUniqueId());
+					getWorldGuard().getRegionManager(P.getWorld()).getRegion(getRegionName(P)).setOwners(OWNS);
+					inDebt.add(P.getUniqueId().toString());
+					this.saveConfig();
+				}
+				
+			}
+			}
+		}

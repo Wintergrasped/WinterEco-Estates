@@ -8,14 +8,20 @@ public class Loan {
 	public int amt;
 	public int pamt;
 	public int pmtl;
+	public int t;
+	public String Prop;
 	
-	public Loan(Player P, int Ammount, int paymentAmmount, int paymentsLeft) {
+	
+	public Loan(Player P, int Ammount, int paymentAmmount, int paymentsLeft, int type, String property) {
 		
 		p = P;
 		amt= Ammount;
 		pamt = paymentAmmount;
 		pmtl = paymentsLeft;
-		
+		t = type;
+		if (type == 2) {
+			Prop = Prop;
+		}
 	}
 	
 	public Player getOwner() {
@@ -33,6 +39,21 @@ public class Loan {
 	public int getPaymentsRemaining() {
 		return pmtl;
 	}
+	
+	public int getType() {
+		return t;
+	}
+	
+	public boolean involvesPropety() {
+		if (!(t==1)) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	
+	
 	
 	public void setOwner(Player no) {
 		p = no;
