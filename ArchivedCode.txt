@@ -18,6 +18,7 @@ if (args[0].equalsIgnoreCase("credit")) {
 						LN = LN * 5;
 						paym = (LN*0.25);
 					}else if(crd >= goodcredit) {
+						LN = LN * 100;
 						paym = (LN*0.08);
 					}
 					
