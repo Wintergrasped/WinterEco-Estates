@@ -14,8 +14,8 @@ import net.milkbowl.vault.economy.Economy;
 
 public class Banking {
 
-	Plugin M = Bukkit.getPluginManager().getPlugin("WinterEco");
-	Configuration conf = M.getConfig();
+	static Plugin M = Bukkit.getPluginManager().getPlugin("WinterEco");
+	static Configuration conf = M.getConfig();
 	
 	public Loan LN;
 	

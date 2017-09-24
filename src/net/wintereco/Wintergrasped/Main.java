@@ -765,6 +765,8 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void saveAll() {
 		
+		Banking  B = new Banking();
+		B.AutoPay(this, econ);
 		
 		for (Loan HG : Loans) {
 			LoansList.add(HG.getID());
