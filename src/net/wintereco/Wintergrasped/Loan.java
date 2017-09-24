@@ -19,5 +19,21 @@ public class Loan {
 		pmtl = paymentsLeft;
 		
 	}
+	
+	public Player getOwner() {
+		return p;
+	}
+	
+	public int getAmount() {
+		return amt;
+	}
+	
+	public int getPaymentAmount() {
+		return pamt;
+	}
+	
+	public int getPaymentsRemaining() {
+		return pmtl;
+	}
 
 }
