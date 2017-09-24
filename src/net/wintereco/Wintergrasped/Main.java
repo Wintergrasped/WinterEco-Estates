@@ -39,6 +39,7 @@ public class Main extends JavaPlugin implements Listener {
 	public int badcredit = 450;
 	public int okaycredit = 600;
 	public int goodcredit = 720;
+	public double Version = 1.2;
 	
 	public int FoundingCity = 4500000;
 	public int creditLock = 0;
@@ -154,6 +155,13 @@ public class Main extends JavaPlugin implements Listener {
 		
 		
 		if (cmd.getName().equalsIgnoreCase("wec")) {
+			if (args.length == 0) {
+				P.sendMessage(ChatColor.GREEN+" Made by Wintergrasped");
+				P.sendMessage(ChatColor.GREEN+" Version: "+ Version);
+				P.sendMessage(ChatColor.GREEN+" Server of Origin CrushCraft");
+				P.sendMessage(ChatColor.GREEN+" Initial relase 9/22/2017 by Wintergrasped on Spigotmc.org");
+				P.sendMessage(ChatColor.GREEN+" Source: https://github.com/Wintergrasped/WinterEco-Estates");
+			}
 			if (args[0].equalsIgnoreCase("Creditinfo")) {
 				int Credit = credit(Bukkit.getPlayer(sender.getName()));
 				
