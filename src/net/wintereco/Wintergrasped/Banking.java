@@ -22,7 +22,7 @@ public class Banking {
 	
 	public void AutoPay(Main NM, Economy eco) {
 		
-		
+		M.saveConfig();
 		
 		List<String> STR = conf.getStringList("LoanList");	
 		for (String LID : STR) {
@@ -36,17 +36,17 @@ public class Banking {
 			
 			Loan LNM = new Loan(LID, Bukkit.getPlayer(UUID.fromString(Owner)), Ammount, PayAmmount, PayRemaining, Type, ServerTime, conf.getInt("ForgivnessPoints"), "");
 			
-			
+			M.saveConfig();
 			
 			if (conf.getBoolean("TakeOfflinePayments")) {
-			
+				M.saveConfig();
 			
 			if (NextPay <= ServerTime) {
 				Player OWN = Bukkit.getPlayer(UUID.fromString(Owner));
 				
 				//Does player have enough for payment?
 				if (eco.has(OWN, PayAmmount)) {
-					
+					M.saveConfig();
 					//Withdraw payment
 					eco.withdrawPlayer(OWN, PayAmmount);
 					PayRemaining--;
@@ -61,7 +61,7 @@ public class Banking {
 					conf.set("PlayerData."+OWN.getUniqueId()+".Payments", Payments);
 					M.saveConfig();
 				}else {
-					
+					M.saveConfig();
 					//Add Payment to player credit history
 					int LatePayments = conf.getInt("PlayerData."+OWN.getUniqueId()+".LatePayments");
 					LatePayments++;
@@ -94,7 +94,7 @@ public class Banking {
 			if (NextPay <= ServerTime) {
 				Player OWN = Bukkit.getPlayer(UUID.fromString(Owner));
 				
-				
+				M.saveConfig();
 				if (OWN.isOnline()) {
 				//Does player have enough for payment?
 				if (eco.has(OWN, PayAmmount)) {
@@ -145,11 +145,11 @@ public class Banking {
 			
 		}
 		}
-		
+		M.saveConfig();
 	}
 	
 	public boolean payBill(Main NM, Economy eco, String LID) {
-		
+		M.saveConfig();
 		String Owner = conf.getString("LoanInfo."+LID+".Owner");
 		int LoanAmmount = conf.getInt("LoanInfo."+LID+".Amount");
 		int PayAmmount = conf.getInt("LoanInfo."+LID+".PayAmount");
@@ -162,6 +162,7 @@ public class Banking {
 		
 		
 		if (eco.has(Bukkit.getPlayer(UUID.fromString(Owner)), PayAmmount)) {
+			M.saveConfig();
 			eco.withdrawPlayer(Bukkit.getPlayer(UUID.fromString(Owner)), PayAmmount);
 			p.sendMessage(conf.getString("Tag")+ChatColor.GREEN+" You made a payment of $"+PayAmmount+" towards loan ID: "+LID);
 			PayRemaining--;
@@ -171,9 +172,11 @@ public class Banking {
 			conf.set("LoanInfo."+LID+".NextPay", NextPay);
 			conf.set("LoanInfo."+LID+".PayRemaining", PayRemaining);
 			addPayments(NM, eco, Owner, false, true);
+			M.saveConfig();
 			return true;
 		}else {
 			p.sendMessage(conf.getString("Tag")+ChatColor.RED+" Insufficent funds.");
+			M.saveConfig();
 			return false;
 		}
 		

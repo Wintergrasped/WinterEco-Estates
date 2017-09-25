@@ -185,6 +185,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getConfig().set("ServerTime", ServerTime);
 		this.getConfig().set("ServerOwner.UUID", Evictor);
 		this.getConfig().set("LoanList", LoansList);
+		saveLoanSys();
 		this.saveConfig();
 	}
 	
@@ -905,6 +906,26 @@ public class Main extends JavaPlugin implements Listener {
 			},0, 1200);
 	}
 	
+	public void saveLoanSys() {
+		for (Loan HG : Loans) {
+			LoansList.add(HG.getID());
+					String PRS = HG.getID(); 
+    				conf.set("LoanInfo."+PRS+".Player", HG.getOwner().getUniqueId().toString()); 
+    				conf.set("LoanInfo."+PRS+".Amount", HG.getAmount()); 
+    				conf.set("LoanInfo."+PRS+".PayAmount", HG.getPaymentAmount()); 
+    				conf.set("LoanInfo."+PRS+".PayRemaining", HG.getPaymentsRemaining()); 
+    				conf.set("LoanInfo."+PRS+".Type", HG.getType());
+    				conf.set("LoanInto."+PRS+".NextPay", HG.getNextPay()); 
+    				conf.set("LoanInfo."+PRS+".Forgivness", HG.getForgivness());
+    				if (HG.involvesPropety()) {
+    					conf.set("LoanInfo."+PRS+".Property", HG.getProperty());
+    				}else{
+    					conf.set("LoanInfo."+PRS+".Property", "");
+    				}
+		}
+		this.saveConfig();
+	}
+	
 	public void saveAll() {
 		
 		Banking  B = new Banking();
@@ -913,19 +934,20 @@ public class Main extends JavaPlugin implements Listener {
 		for (Loan HG : Loans) {
 			LoansList.add(HG.getID());
 					String PRS = HG.getID(); 
-    				conf.set("LoanData."+PRS+".Player", HG.getOwner().getUniqueId().toString()); 
-    				conf.set("LoanData."+PRS+".Amount", HG.getAmount()); 
-    				conf.set("LoanData."+PRS+".PayAmount", HG.getPaymentAmount()); 
-    				conf.set("LoanData."+PRS+".PayRemaining", HG.getPaymentsRemaining()); 
-    				conf.set("LoanData."+PRS+".Type", HG.getType());
-    				conf.set("LoanData."+PRS+".NextPay", HG.getNextPay()); 
-    				conf.set("LoanData."+PRS+".Forgivness", HG.getForgivness());
+    				conf.set("LoanInfo."+PRS+".Player", HG.getOwner().getUniqueId().toString()); 
+    				conf.set("LoanInfo."+PRS+".Amount", HG.getAmount()); 
+    				conf.set("LoanInfo."+PRS+".PayAmount", HG.getPaymentAmount()); 
+    				conf.set("LoanInfo."+PRS+".PayRemaining", HG.getPaymentsRemaining()); 
+    				conf.set("LoanInfo."+PRS+".Type", HG.getType());
+    				conf.set("LoanInto."+PRS+".NextPay", HG.getNextPay()); 
+    				conf.set("LoanInfo."+PRS+".Forgivness", HG.getForgivness());
     				if (HG.involvesPropety()) {
-    					conf.set("LoanData."+PRS+".Property", HG.getProperty());
+    					conf.set("LoanInfo."+PRS+".Property", HG.getProperty());
     				}else{
-    					conf.set("LoanData."+PRS+".Property", "");
+    					conf.set("LoanInfo."+PRS+".Property", "");
     				}
 		}
+		this.saveConfig();
 		
 		ServerTime++;
 		if (debug) {
