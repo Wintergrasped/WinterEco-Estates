@@ -62,6 +62,8 @@ public class Main extends JavaPlugin implements Listener {
 	public long ServerTime = 0;
 	public String Evictor = "5d1ead21-099d-3a92-baac-2a53cab17220";
 	
+	public Banking  B;
+	
 	public int FoundingCity = 4500000;
 	public int creditLock = 0;
 	public List<Loan> Loans = new ArrayList();
@@ -88,6 +90,7 @@ public class Main extends JavaPlugin implements Listener {
 		load();
 		VersionCheck();
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
+		B = new Banking();
 	}
 	
 	
@@ -152,14 +155,14 @@ public class Main extends JavaPlugin implements Listener {
     	
     	for (String PRS : this.getConfig().getStringList("LoanList")) {
     		Loans.add(new Loan(PRS, 
-    				Bukkit.getPlayer(UUID.fromString(conf.getString("LoanData."+PRS+".Player"))), 
-    				conf.getInt("LoanData."+PRS+".Amount"), 
-    				conf.getInt("LoanData."+PRS+".PayAmount"), 
-    				conf.getInt("LoanData."+PRS+".PayRemaining"), 
-    				conf.getInt("LoanData."+PRS+".Type"), 
-    				conf.getLong("LoanData."+PRS+".NextPay"),
-    				conf.getInt("LoanData."+PRS+".Forgivness"),
-    				conf.getString("LoanData."+PRS+".Property")));
+    				Bukkit.getPlayer(UUID.fromString(conf.getString("LoanInfo."+PRS+".Player"))), 
+    				conf.getInt("LoanInfo."+PRS+".Amount"), 
+    				conf.getInt("LoanInfo."+PRS+".PayAmount"), 
+    				conf.getInt("LoanInfo."+PRS+".PayRemaining"), 
+    				conf.getInt("LoanInfo."+PRS+".Type"), 
+    				conf.getLong("LoanInfo."+PRS+".NextPay"),
+    				conf.getInt("LoanInfo."+PRS+".Forgivness"),
+    				conf.getString("LoanInfo."+PRS+".Property")));
     	}
     	
     	if (!this.getConfig().contains("curLoan")) {
@@ -471,7 +474,7 @@ public class Main extends JavaPlugin implements Listener {
 					   this.getConfig().set("Propertys."+args[2]+".Owner", Bukkit.getPlayer(sender.getName()).getUniqueId().toString());
 					   this.getConfig().set("Propertys."+args[2]+".Loaned", Price);
 					   this.saveConfig();
-					   PropertysForSale.remove(args[1]);
+					   PropertysForSale.remove(args[2]);
 					   sender.sendMessage(TAG+ChatColor.GREEN+"You bought "+args[2]+" for "+this.getConfig().getInt("Propertys."+args[2]+".Price"));
 					   
 					   DefaultDomain OWNS = new DefaultDomain();
@@ -522,6 +525,36 @@ public class Main extends JavaPlugin implements Listener {
 			}else if (args[1].equalsIgnoreCase("pay")) {
 				Banking  B = new Banking();
 				B.payBill(this, econ, args[2]);
+			}else if (args[1].equalsIgnoreCase("info")) {
+				if (1==2) {
+					
+				}else{
+					int crds = credit(P);
+					int LNs = credit(P)*10;
+					double payms = 0;
+					
+					if (crds <= badcredit) {
+						LNs = LNs/2;
+						payms = (LNs*0.8);
+					}else if (crds >= okaycredit && crds <= okaycredit) {
+						LNs = LNs * 5;
+						payms = (LNs*0.25);
+					}else if(crds >= okaycredit) {
+						LNs = LNs * 100;
+						payms = (LNs*0.08);
+					}
+					
+					if (isHighRisk(P)) {
+						LNs = LNs / 5;
+					}
+					
+					
+					sender.sendMessage(TAG+ChatColor.GREEN+"Your credit application would land you $"+LNs);
+					sender.sendMessage(TAG+ChatColor.GREEN+"Payment term, 12 payments of $"+payms);
+					sender.sendMessage(TAG+ChatColor.GREEN+"do '/wec credit apply' to accept this offer");
+					
+					
+				}
 			}
 			
 			this.saveConfig();
@@ -915,7 +948,7 @@ public class Main extends JavaPlugin implements Listener {
     				conf.set("LoanInfo."+PRS+".PayAmount", HG.getPaymentAmount()); 
     				conf.set("LoanInfo."+PRS+".PayRemaining", HG.getPaymentsRemaining()); 
     				conf.set("LoanInfo."+PRS+".Type", HG.getType());
-    				conf.set("LoanInto."+PRS+".NextPay", HG.getNextPay()); 
+    				conf.set("LoanInfo."+PRS+".NextPay", HG.getNextPay()); 
     				conf.set("LoanInfo."+PRS+".Forgivness", HG.getForgivness());
     				if (HG.involvesPropety()) {
     					conf.set("LoanInfo."+PRS+".Property", HG.getProperty());
@@ -928,7 +961,6 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void saveAll() {
 		
-		Banking  B = new Banking();
 		B.AutoPay(this, econ);
 		
 		for (Loan HG : Loans) {
@@ -939,7 +971,7 @@ public class Main extends JavaPlugin implements Listener {
     				conf.set("LoanInfo."+PRS+".PayAmount", HG.getPaymentAmount()); 
     				conf.set("LoanInfo."+PRS+".PayRemaining", HG.getPaymentsRemaining()); 
     				conf.set("LoanInfo."+PRS+".Type", HG.getType());
-    				conf.set("LoanInto."+PRS+".NextPay", HG.getNextPay()); 
+    				conf.set("LoanInfo."+PRS+".NextPay", HG.getNextPay()); 
     				conf.set("LoanInfo."+PRS+".Forgivness", HG.getForgivness());
     				if (HG.involvesPropety()) {
     					conf.set("LoanInfo."+PRS+".Property", HG.getProperty());
@@ -973,6 +1005,9 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 			*/
+			if (this.getConfig().contains("PlayerData."+P.getUniqueId().toString()+".NextRent")) {
+				this.getConfig().set("PlayerData."+P.getUniqueId().toString()+".NextRent", "None");
+			}
 			if (this.getConfig().getString("PlayerData."+P.getUniqueId().toString()+".NextRent").equalsIgnoreCase("None")) {
 			}else {
 				if (this.getConfig().getInt("PlayerData."+P.getUniqueId().toString()+".PlayTime") >= this.getConfig().getInt("PlayerData."+P.getUniqueId().toString()+".NextRent")) {

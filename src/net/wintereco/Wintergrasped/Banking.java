@@ -14,8 +14,8 @@ import net.milkbowl.vault.economy.Economy;
 
 public class Banking {
 
-	static Plugin M = Bukkit.getPluginManager().getPlugin("WinterEco");
-	static Configuration conf = M.getConfig();
+	public Plugin M = Bukkit.getPluginManager().getPlugin("WinterEco");
+	public Configuration conf = M.getConfig();
 	
 	public Loan LN;
 	
@@ -24,9 +24,13 @@ public class Banking {
 		
 		M.saveConfig();
 		
+		M = NM;
+		conf = NM.getConfig();
+		
+		
 		List<String> STR = conf.getStringList("LoanList");	
 		for (String LID : STR) {
-			String Owner = conf.getString("LoanInfo."+LID+".Owner");
+			String Owner = conf.getString("LoanInfo."+LID+".Player"); //TODO FIX NULL
 			int Ammount = conf.getInt("LoanInfo."+LID+".Amount");
 			int PayAmmount = conf.getInt("LoanInfo."+LID+".PayAmount");
 			int PayRemaining = conf.getInt("LoanInfo."+LID+".PayRemaining");
@@ -34,7 +38,20 @@ public class Banking {
 			long ServerTime = conf.getLong("ServerTime");
 			int Type = conf.getInt("LoanInfo."+LID+".Type");
 			
+			if (PayRemaining < 0) {
+				return;
+			}
+			
 			Loan LNM = new Loan(LID, Bukkit.getPlayer(UUID.fromString(Owner)), Ammount, PayAmmount, PayRemaining, Type, ServerTime, conf.getInt("ForgivnessPoints"), "");
+			
+			for (Loan MM : NM.Loans) {
+				
+				if (MM.getID().equalsIgnoreCase(LID)) {
+					LNM = MM;
+				}
+				
+			}
+			
 			
 			M.saveConfig();
 			
@@ -51,6 +68,9 @@ public class Banking {
 					eco.withdrawPlayer(OWN, PayAmmount);
 					PayRemaining--;
 					conf.set("LoanInfo."+LID+".PayRemaining", PayRemaining);
+					LNM.setPaymentsRemaining(PayRemaining);
+					NM.Loans.remove(LNM);
+					NM.Loans.add(LNM);
 					OWN.sendMessage(ChatColor.GREEN+" Loan Payment of $"+PayAmmount+" deducted for loan ID: "+LID);
 					NextPay = NextPay+conf.getInt("PaymentTerm");
 					conf.set("LoanInfo."+LID+".NextPay", NextPay);
@@ -92,7 +112,12 @@ public class Banking {
 			
 			
 			if (NextPay <= ServerTime) {
+				if (PayRemaining >= 1) {
 				Player OWN = Bukkit.getPlayer(UUID.fromString(Owner));
+				
+				if (PayRemaining < 0) {
+					return;
+				}
 				
 				M.saveConfig();
 				if (OWN.isOnline()) {
@@ -103,6 +128,9 @@ public class Banking {
 					eco.withdrawPlayer(OWN, PayAmmount);
 					PayRemaining--;
 					conf.set("LoanInfo."+LID+".PayRemaining", PayRemaining);
+					LNM.setPaymentsRemaining(PayRemaining);
+					NM.Loans.remove(LNM);
+					NM.Loans.add(LNM);
 					OWN.sendMessage(ChatColor.GREEN+" Loan Payment of $"+PayAmmount+" deducted for loan ID: "+LID);
 					NextPay = NextPay+conf.getInt("PaymentTerm");
 					conf.set("LoanInfo."+LID+".NextPay", NextPay);
@@ -141,7 +169,7 @@ public class Banking {
 			}
 			}
 			
-			
+			}
 			
 		}
 		}
@@ -150,7 +178,7 @@ public class Banking {
 	
 	public boolean payBill(Main NM, Economy eco, String LID) {
 		M.saveConfig();
-		String Owner = conf.getString("LoanInfo."+LID+".Owner");
+		String Owner = conf.getString("LoanInfo."+LID+".Player"); //TODO FIX NULL
 		int LoanAmmount = conf.getInt("LoanInfo."+LID+".Amount");
 		int PayAmmount = conf.getInt("LoanInfo."+LID+".PayAmount");
 		int Forgivness = conf.getInt("LoanInfo."+LID+".Forgivness");
@@ -160,28 +188,43 @@ public class Banking {
 		int Type = conf.getInt("LoanInfo."+LID+".Type");
 		Player p = Bukkit.getPlayer(UUID.fromString(Owner));
 		
+		Loan LNM = new Loan(LID, Bukkit.getPlayer(UUID.fromString(Owner)), LoanAmmount, PayAmmount, PayRemaining, Type, ServerTime, conf.getInt("ForgivnessPoints"), "");
+		
+		for (Loan MM : NM.Loans) {
+			
+			if (MM.getID().equalsIgnoreCase(LID)) {
+				LNM = MM;
+			}
+			
+		}
+		
 		
 		if (eco.has(Bukkit.getPlayer(UUID.fromString(Owner)), PayAmmount)) {
 			M.saveConfig();
+			if (PayRemaining >= 1) {
 			eco.withdrawPlayer(Bukkit.getPlayer(UUID.fromString(Owner)), PayAmmount);
-			p.sendMessage(conf.getString("Tag")+ChatColor.GREEN+" You made a payment of $"+PayAmmount+" towards loan ID: "+LID);
+			p.sendMessage(NM.TAG+ChatColor.GREEN+" You made a payment of $"+PayAmmount+" towards loan ID: "+LID);
 			PayRemaining--;
 			NextPay = NextPay+conf.getInt("PaymentTerm");
 			Forgivness = Forgivness+conf.getInt("ForgivnessPoints");
 			conf.set("LoanInfo."+LID+".Forgivness", Forgivness);
 			conf.set("LoanInfo."+LID+".NextPay", NextPay);
 			conf.set("LoanInfo."+LID+".PayRemaining", PayRemaining);
+			LNM.setPaymentsRemaining(PayRemaining);
+			NM.Loans.remove(LNM);
+			NM.Loans.add(LNM);
 			addPayments(NM, eco, Owner, false, true);
 			M.saveConfig();
 			return true;
+			}else {
+				p.sendMessage(NM.TAG+ChatColor.GREEN+" Loan Paid Off!");
+				return true;
+			}
 		}else {
-			p.sendMessage(conf.getString("Tag")+ChatColor.RED+" Insufficent funds.");
+			p.sendMessage(NM.TAG+ChatColor.RED+" Insufficent funds.");
 			M.saveConfig();
 			return false;
 		}
-		
-		
-		
 	}
 	
 	
