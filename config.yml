@@ -3,3 +3,4 @@ PaymentTerm: 720
 Forgivness: false
 ForgivnessPoints: 2
 TakeOfflinePayments: true
+FireworkEffect: true
